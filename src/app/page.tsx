@@ -185,7 +185,7 @@ export default function InventoryApp() {
   const getTotalCostForUser = (u: User) => {
     return u.allocations.reduce((sum, a) => {
       const eq = equipment.find((e) => e.id === a.equipmentId);
-      return eq ? sum + eq.price * a.quantity : sum;
+      return sum + (eq?.price ?? 0) * a.quantity;
     }, 0);
   };
 
@@ -398,7 +398,7 @@ export default function InventoryApp() {
                                 return (
                                   <li key={a.equipmentId}>
                                     {eq?.name || "Unknown"} x{a.quantity} | ₹
-                                    {eq?.price * a.quantity}
+                                    {(eq?.price ?? 0) * a.quantity}
                                   </li>
                                 );
                               })}
@@ -439,7 +439,7 @@ export default function InventoryApp() {
                               <li key={a.equipmentId} className="flex justify-between">
                                 <span>
                                   {eq?.name || "Unknown"} x{a.quantity} | ₹
-                                  {eq?.price * a.quantity}
+                                  {(eq?.price ?? 0) * a.quantity}
                                 </span>
                                 <button
                                   onClick={() =>
