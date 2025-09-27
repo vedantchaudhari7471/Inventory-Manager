@@ -1,19 +1,22 @@
-import { NextResponse } from 'next/server';
-// This would import your database connection utility
-// import { query } from '@/lib/db';
+import { sql } from "@vercel/postgres";
+import { NextResponse } from "next/server";
 
+// GET all equipment
 export async function GET() {
-  // const equipment = await query('SELECT * FROM equipment');
-  const mockEquipment = [
-      { id: 1, name: 'Laptop', quantity: 10 },
-      { id: 2, name: 'Mouse', quantity: 25 },
-      { id: 3, name: 'Keyboard', quantity: 2 },
-  ];
-  return NextResponse.json(mockEquipment);
+  const { rows } = await sql`SELECT * FROM equipment ORDER BY id;`;
+  return NextResponse.json(rows);
 }
 
-export async function POST(request: Request) {
-  const { name, quantity } = await request.json();
-  // await query('INSERT INTO equipment (name, quantity) VALUES (?, ?)', [name, quantity]);
-  return NextResponse.json({ success: true, message: 'Equipment added' });
+// POST new equipment
+export async function POST(req: Request) {
+  const { name, quantity, price } = await req.json();
+  const total = quantity;
+
+  const { rows } = await sql`
+    INSERT INTO equipment (name, quantity, total, price)
+    VALUES (${name}, ${quantity}, ${total}, ${price})
+    RETURNING *;
+  `;
+
+  return NextResponse.json(rows[0]);
 }
